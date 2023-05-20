@@ -22,7 +22,12 @@ class CreateAccountViewModel extends GetxController {
     return results.isNotEmpty;
   }
 
-
+  TextEditingController nameTextController = TextEditingController();
+  TextEditingController passwordTextController = TextEditingController();
+  TextEditingController confirmPasswordTextController = TextEditingController();
+  TextEditingController emailTextController = TextEditingController();
+  TextEditingController addressTextController = TextEditingController();
+  bool isPatient = true;
 
   Future<void> createAccount() async {
     try {

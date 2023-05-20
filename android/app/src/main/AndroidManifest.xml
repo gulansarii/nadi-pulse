@@ -4,6 +4,9 @@
         android:label="nadi"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+           <meta-data android:name="com.google.android.geo.API_KEY"
+                   android:value="AIzaSyBhPteA6FOMIaQqRIpHk7xLM5I4BN3_zMs"/>
+     
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -39,6 +39,7 @@ dependencies:
   get: ^4.6.5
   fluttertoast: ^8.2.1
   postgres: ^2.6.1
+  google_places_flutter: ^2.0.5
 
 dev_dependencies:
   flutter_test:
