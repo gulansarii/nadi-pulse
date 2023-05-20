@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../viewmodel/create_account_viewmodel.dart';
+
 class RadioButtonsWidget extends StatefulWidget {
+  const RadioButtonsWidget({super.key});
+
   @override
   _RadioButtonsWidgetState createState() => _RadioButtonsWidgetState();
 }
 
 class _RadioButtonsWidgetState extends State<RadioButtonsWidget> {
+  CreateAccountViewModel createAccountViewModel =Get.find();
   String? _selectedRole;
 
   @override
@@ -28,12 +33,13 @@ class _RadioButtonsWidgetState extends State<RadioButtonsWidget> {
           // height: 100,
           child: RadioListTile(
             contentPadding: EdgeInsets.zero,
-            title: Text('Patient'),
+            title: const Text('Patient'),
             value: 'Patient',
             groupValue: _selectedRole,
             onChanged: (value) {
               setState(() {
                 _selectedRole = value;
+                createAccountViewModel.isPatient =  true;
               });
             },
           ),
@@ -43,12 +49,15 @@ class _RadioButtonsWidgetState extends State<RadioButtonsWidget> {
           // height: 100,
           child: RadioListTile(
             contentPadding: EdgeInsets.zero,
-            title: Text('Doctor'),
+            title: const Text('Doctor'),
             value: 'Doctor',
             groupValue: _selectedRole,
             onChanged: (value) {
               setState(() {
                 _selectedRole = value;
+                                createAccountViewModel.isPatient =  false;
+                                
+
               });
             },
           ),
