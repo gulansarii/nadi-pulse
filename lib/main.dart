@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nadi/src/service/database_service.dart';
 import 'package:nadi/src/utils/material_swatch.dart';
 import 'package:nadi/src/view/screens/create_account_screen.dart';
-import 'package:nadi/src/view/screens/signin_screen.dart';
 
-void main() {
+void main() async{
   runApp(const MyApp());
+ await  DatabaseService.getConnection();
 }
 
 class MyApp extends StatelessWidget {
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: createMaterialColor(const Color(0xFFa1d6c9)),
       ),
-      home: SignInScreen(),
+      home: CreateAccountScreen(),
     );
   }
 }

@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nadi/src/utils/constants.dart';
 import 'package:nadi/src/view/screens/create_account_screen.dart';
+import 'package:nadi/src/viewmodel/login_viewmodel.dart';
 
 class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
+
   @override
   State<SignInScreen> createState() => _SignInScreenState();
 }
 
 class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
+  LoginViewModel loginViewModel = Get.put(LoginViewModel());
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +48,14 @@ class _SignInScreenState extends State<SignInScreen> {
                 height: 32,
               ),
               TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: loginViewModel.emailController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter email';
+                  }
+                  else if(GetUtils.isEmail(value) == false){
+                    return 'Please enter valid email';
                   }
                   return null;
                 },
@@ -68,9 +77,14 @@ class _SignInScreenState extends State<SignInScreen> {
                 height: 16,
               ),
               TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: loginViewModel.passwordController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter password';
+                  }
+                  else if(value.length < 6){
+                    return 'Password must be atleast 6 characters';
                   }
                   return null;
                 },
@@ -100,7 +114,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 width: Get.width,
                 child: TextButton(
                   onPressed: () {
-                    _formKey.currentState!.validate();
+                   if( _formKey.currentState!.validate()){
+                      loginViewModel.login();
+                   }
                   },
                   child: const Text(
                     'Submit',
