@@ -4,9 +4,9 @@ import 'package:nadi/src/service/database_service.dart';
 import 'package:nadi/src/utils/material_swatch.dart';
 import 'package:nadi/src/view/screens/signin_screen.dart';
 
-void main() async{
+void main() async {
   runApp(const MyApp());
- await  DatabaseService.getConnection();
+  await DatabaseService.getConnection();
 }
 
 class MyApp extends StatelessWidget {
