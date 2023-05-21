@@ -36,6 +36,12 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
   }
 
   @override
+  void dispose() {
+    Get.delete<AppointmentBookingController>();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey[100],
@@ -103,67 +109,96 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
               ),
               const TimeSlotSelector(),
               const Spacer(),
-           widget.isUpdate?  Row(children: [
-
-             SafeArea(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade400,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  // height: 48,
-                  width: Get.width/2.2,
-                  child: TextButton(
-                    onPressed: () {
-                      appointmentBookingController.cancelAppointment();
-                    },
-                    child: const Text(
-                      'Cancel ',
-                      style: TextStyle(color: Colors.white),
+              widget.isUpdate
+                  ? Row(
+                      children: [
+                        SafeArea(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade400,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            // height: 48,
+                            width: Get.width / 2.2,
+                            child: TextButton(
+                              onPressed: () {
+                                showDialog<void>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Cancel Appointment'),
+                                        content: const Text(
+                                            'Are you sure you want to cancel this appointment?'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: const Text('Cancel' , style: TextStyle(color: Colors.black)),
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // Close the dialog
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: const Text('Confirm' , style: TextStyle(color: Colors.black),),
+                                            onPressed: () {
+                                              appointmentBookingController
+                                                  .cancelAppointment();
+                                              Navigator.of(context)
+                                                  .pop(); // Close the dialog
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    });
+                              },
+                              child: const Text(
+                                'Cancel ',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        SafeArea(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: ConstantThings.accentColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            // height: 48,
+                            width: Get.width / 2.2,
+                            child: TextButton(
+                              onPressed: () {
+                                appointmentBookingController
+                                    .updateAppointment();
+                              },
+                              child: const Text(
+                                'Update',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : SafeArea(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: ConstantThings.accentColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        // height: 48,
+                        width: Get.width,
+                        child: TextButton(
+                          onPressed: () {
+                            appointmentBookingController.bookAppointment();
+                          },
+                          child: const Text(
+                            'Book Appointment',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              const Spacer(),
-               SafeArea(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: ConstantThings.accentColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  // height: 48,
-                  width: Get.width/ 2.2,
-                  child: TextButton(
-                    onPressed: () {
-                      appointmentBookingController.updateAppointment();
-                    },
-                    child: const Text(
-                      'Update',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-
-           ],) :    SafeArea(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: ConstantThings.accentColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  // height: 48,
-                  width: Get.width,
-                  child: TextButton(
-                    onPressed: () {
-                      appointmentBookingController.bookAppointment();
-                    },
-                    child: const Text(
-                      'Book Appointment',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
               const SizedBox(
                 height: 16,
               )
