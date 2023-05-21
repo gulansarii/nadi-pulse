@@ -81,7 +81,7 @@ class CreateAccountViewModel extends GetxController {
         'state': state,
         'latitude': latitude,
         'longitude': longitude,
-        'location': '($city, $state)',
+        'location': '$city, $state',
         'uuid': uuid
       });
 
