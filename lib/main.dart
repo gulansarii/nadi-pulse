@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nadi/src/service/database_service.dart';
 import 'package:nadi/src/utils/material_swatch.dart';
-import 'package:nadi/src/view/screens/doctor_dashboard.dart';
+import 'package:nadi/src/view/screens/patient_dashboard.dart';
+import 'package:nadi/src/view/screens/welcome_screen.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: createMaterialColor(const Color(0xFFa1d6c9)),
       ),
-      home: DoctorDashboard(),
+      home: WelcomeScreen(),
     );
   }
 }
