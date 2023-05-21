@@ -81,8 +81,9 @@ class AppointmentBookingController extends GetxController {
 
       // print(result);
 
-      Fluttertoast.showToast(msg: "Appointment booked successfully");
       Get.find<PatientDashBoardViewModel>().getAllAppointments();
+      Fluttertoast.showToast(msg: "Appointment booked successfully");
+
       Get.back();
     } catch (e) {
       Fluttertoast.showToast(msg: "Something went wrong");
@@ -110,9 +111,10 @@ class AppointmentBookingController extends GetxController {
         'newTimeSlot': selectedTimeSlot,
         'appointmentId': appointmentId,
       });
-      Fluttertoast.showToast(msg: "Appointment updated successfully");
 
       Get.find<PatientDashBoardViewModel>().getAllAppointments();
+      Fluttertoast.showToast(msg: "Appointment updated successfully");
+
       Get.back();
     } catch (e) {
       Fluttertoast.showToast(msg: "Something went wrong");
@@ -121,19 +123,23 @@ class AppointmentBookingController extends GetxController {
   }
 
   Future<void> cancelAppointment() async {
-  try {
-    await connection.query('''
-      DELETE FROM appointments
+    try {
+      final result = await connection.query('''
+      UPDATE appointments
+      SET status = 'Cancelled'
       WHERE id = @appointmentId
-    ''', substitutionValues: {
-      'appointmentId': appointmentId,
-    });
+    ''', substitutionValues: {'appointmentId': appointmentId});
 
-    Fluttertoast.showToast(msg: "Appointment canceled successfully");
-  } catch (e) {
-    Fluttertoast.showToast(msg: "Something went wrong");
-    print('Error canceling appointment: $e');
+      if (result.affectedRowCount > 0) {
+        Get.find<PatientDashBoardViewModel>().getAllAppointments();
+        Get.back();
+        Fluttertoast.showToast(msg: "Appointment cancelled successfully");
+      } else {
+        Fluttertoast.showToast(msg: "Failed to cancel appointment");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Something went wrong");
+      print('Error canceling appointment: $e');
+    }
   }
-}
-
 }
