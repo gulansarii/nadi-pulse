@@ -5,7 +5,7 @@ class DatabaseService {
       print("start Connected to database");
 
     PostgreSQLConnection connection = PostgreSQLConnection("10.0.2.2", 5432, "postgres", username: "postgres", password: "12345678");
-    connection.open().then((value) => print("Connected to databasesssss")) .catchError((e) {
+   await connection.open().then((value) => print("Connected to databasesssss")) .catchError((e) {
       print(e);
       print("Connection failed");
     });

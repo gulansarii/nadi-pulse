@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -6,11 +5,11 @@ import 'package:get/get.dart';
 import 'package:nadi/src/utils/constants.dart';
 import 'package:nadi/src/view/widgets/timeslot_widget.dart';
 import 'package:nadi/src/viewmodel/appointment_booking_controller.dart';
-import 'package:weekday_selector/weekday_selector.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
 
 class AppointmentBookingScreen extends StatefulWidget {
-  const AppointmentBookingScreen({super.key});
+  String doctor_id;
+   AppointmentBookingScreen({super.key  , required this.doctor_id});
 
   @override
   State<AppointmentBookingScreen> createState() =>
@@ -27,8 +26,8 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
         appBar: AppBar(
           backgroundColor: Colors.grey[100],
           elevation: 0,
-          title: Row(
-            children: const [
+          title: const Row(
+            children: [
               Text(
                 "Nearest Doctors",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

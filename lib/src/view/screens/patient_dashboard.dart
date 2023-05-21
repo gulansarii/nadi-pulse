@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
-import 'package:nadi/src/utils/constants.dart';
+import 'package:intl/intl.dart';
+import 'package:nadi/src/view/screens/appointment_booking_screen.dart';
 import 'package:nadi/src/view/screens/nearest_doctor_screen.dart';
+import 'package:nadi/src/viewmodel/patient_dashboad_viewmodel.dart';
 
 class PatientDashboard extends StatefulWidget {
   const PatientDashboard({super.key});
@@ -13,14 +13,26 @@ class PatientDashboard extends StatefulWidget {
 }
 
 class _AppointmentBookingScreenState extends State<PatientDashboard> {
+  PatientDashBoardViewModel patientDashBoardViewModel =
+      Get.put(PatientDashBoardViewModel());
+
+  getData() async {
+    await patientDashBoardViewModel.setConnection();
+    await patientDashBoardViewModel.getPatientid();
+    patientDashBoardViewModel.getAllDoctorList();
+    patientDashBoardViewModel.getAllAppointments();
+  }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      // appBar: AppBar(
-      //   backgroundColor: Colors.grey[100],
-      //   elevation: 0,
-      // ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -88,40 +100,61 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
               alignment: Alignment.center,
               height: 100,
               width: Get.width,
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        children: [
-                          Container(
-                              height: 70,
-                              width: 70,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    width: 1, color: Colors.grey.shade400),
+              child: Obx(() => patientDashBoardViewModel.isLoading.value
+                  ? const CircularProgressIndicator()
+                  : patientDashBoardViewModel.userList.isEmpty
+                      ? const Center(
+                          child: Text("No Doctor Found"),
+                        )
+                      : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount:
+                              patientDashBoardViewModel.userList.length > 3
+                                  ? 3
+                                  : patientDashBoardViewModel.userList.length,
+                          itemBuilder: (context, index) {
+                            var doctor =
+                                patientDashBoardViewModel.userList[index];
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: InkWell(
+                                onTap: () {
+                                  Get.to(() => AppointmentBookingScreen(
+                                        doctor_id: doctor.id,
+                                      ));
+                                },
+                                child: Column(
+                                  children: [
+                                    Container(
+                                        height: 70,
+                                        width: 70,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Colors.grey.shade400),
+                                        ),
+                                        child: Image.asset(
+                                          'assets/doctor.png',
+                                          height: 40,
+                                        )),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    Text(
+                                      doctor.name,
+                                      style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              child: Image.asset(
-                                'assets/doctor.png',
-                                height: 40,
-                              )),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          const Text(
-                            "Dr. John Doe",
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
+                            );
+                          })),
             ),
             const SizedBox(
               height: 24,
@@ -130,8 +163,8 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: SizedBox(
                 width: Get.width,
-                child: Row(
-                  children: const [
+                child: const Row(
+                  children: [
                     Text(
                       "My Appointments",
                       style:
@@ -155,13 +188,38 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
               child: Container(
                 alignment: Alignment.center,
                 width: Get.width,
-                child: ListView.builder(
+                child: Obx(() =>
+                patientDashBoardViewModel.isLoading.value
+                  ? const CircularProgressIndicator()
+                  : patientDashBoardViewModel.appointmentList.isEmpty
+                      ?   Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                                height: Get.height * 0.1,
+                              ),
+                            const SizedBox(
+                                // height: Get.height * 0.3,
+                                child: Text("No Appointment Found"),
+                              ),
+                          ],
+                        ),
+                      )
+                      :
+                 ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(horizontal: 0),
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
-                    itemCount: 3,
+                    itemCount:
+                        patientDashBoardViewModel.appointmentList.length > 3
+                            ? 3
+                            : patientDashBoardViewModel.appointmentList.length,
                     itemBuilder: (context, index) {
+                      var appointment =
+                          patientDashBoardViewModel.appointmentList[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: Container(
@@ -201,12 +259,33 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                                   height: 8,
                                 ),
                                 Row(
-                                  children: const [
-                                    Icon(Icons.access_time_outlined,
+                                  children: [
+                                    const Icon(Icons.access_time_outlined,
                                         color: Colors.black87, size: 24),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+
                                     Text(
-                                      " 12 May   10:00 - 11:00 AM",
-                                      style: TextStyle(
+                                      () {
+                                        {
+                                          final formatter =
+                                              DateFormat('dd MMM yyyy');
+                                          return formatter.format(
+                                              appointment.appointmentDate);
+                                        }
+                                      }(),
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black87),
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      appointment.appointmentTime,
+                                      style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
                                           color: Colors.black87),
@@ -239,8 +318,8 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                                     const SizedBox(
                                       width: 8,
                                     ),
-                                    const Text("Dr John Doe",
-                                        style: TextStyle(
+                                     Text(appointment.doctorName,
+                                        style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500,
                                             color: Colors.black87)),
@@ -266,7 +345,7 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                           ),
                         ),
                       );
-                    }),
+                    })),
               ),
             ),
           ],
