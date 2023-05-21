@@ -18,7 +18,7 @@ class PatientDashBoardViewModel extends GetxController {
   late PostgreSQLConnection connection;
 
   // get patient id from shared preference
-  getPatientid() async{
+  getPatientid() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     patient_id = prefs.getString("user_id")!;
     print("patient_id $patient_id");
@@ -38,6 +38,7 @@ class PatientDashBoardViewModel extends GetxController {
     SELECT * FROM users
     WHERE role = 'D'
   ''');
+      userList.value = [];
       for (final row in results) {
         final user = User(
           id: row[0].toString(),
@@ -71,7 +72,8 @@ FROM appointments AS a
 JOIN users AS u ON a.doctor_id = u.id
 WHERE a.patient_id = '$patient_id';
   ''');
-  print(results);
+      appointmentList.value = [];
+      print(results);
       for (final row in results) {
         final appointment = Appointment.fromMap({
           'id': row[0] as int,

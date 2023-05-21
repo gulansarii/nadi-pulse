@@ -128,8 +128,9 @@ class _NearestDoctorScreenState extends State<NearestDoctorScreen> {
                                 GestureDetector(
                                   onTap: () {
                                     Get.to(() => AppointmentBookingScreen(
-                                          doctor_id: patientDashBoardViewModel
+                                          doctorId: patientDashBoardViewModel
                                               .userList[index].id,
+                                              isUpdate: false,
                                         ));
                                   },
                                   child: Container(
