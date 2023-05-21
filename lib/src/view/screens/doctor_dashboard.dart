@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
-import 'package:nadi/src/view/screens/appointment_booking_screen.dart';
-import 'package:nadi/src/view/screens/nearest_doctor_screen.dart';
 
 class DoctorDashboard extends StatefulWidget {
   const DoctorDashboard({super.key});
@@ -24,8 +20,8 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SizedBox(
             width: Get.width,
-            child: Row(
-              children: const [
+            child: const Row(
+              children: [
                 Text(
                   "My Bookings",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -88,8 +84,8 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                                 const SizedBox(
                                   height: 8,
                                 ),
-                                Row(
-                                  children: const [
+                                const Row(
+                                  children: [
                                     Icon(Icons.access_time_outlined,
                                         color: Colors.black87, size: 24),
                                     Text(
@@ -135,8 +131,8 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                                     const Spacer(),
                                     GestureDetector(
                                       onTap: () {
-                                        Get.to(
-                                            () => AppointmentBookingScreen());
+                                        // Get.to(
+                                        //     () => AppointmentBookingScreen());
                                       },
                                       child: Container(
                                         height: 30,
