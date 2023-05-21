@@ -115,7 +115,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: TextButton(
                   onPressed: () {
                    if( _formKey.currentState!.validate()){
-                      loginViewModel.login();
+                      loginViewModel.login(loginViewModel.emailController.text,  loginViewModel.passwordController.text);
                    }
                   },
                   child: const Text(

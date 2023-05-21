@@ -81,10 +81,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                       width: Get.width / 4,
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          Get.to(() => const SignInScreen());
+                                          Get.offAll(() => const SignInScreen());
                                         },
                                         style: ElevatedButton.styleFrom(
-                                          primary: ConstantThings.accentColor,
+                                          backgroundColor: ConstantThings.accentColor,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(12),
@@ -105,7 +105,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                           Get.to(() => CreateAccountScreen());
                                         },
                                         style: ElevatedButton.styleFrom(
-                                          primary: ConstantThings.accentColor,
+                                          backgroundColor: ConstantThings.accentColor,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(12),

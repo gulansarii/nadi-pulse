@@ -5,6 +5,7 @@ import 'package:google_places_flutter/model/prediction.dart';
 import 'package:nadi/src/utils/constants.dart';
 
 import '../../viewmodel/create_account_viewmodel.dart';
+import '../widgets/radio_button_widget.dart';
 
 class CreateAccountScreen extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
@@ -142,6 +143,10 @@ class CreateAccountScreen extends StatelessWidget {
                               itmClick: (Prediction prediction) {
                                 createAccountViewModel.addressTextController
                                     .text = prediction.description!;
+                                    print("placeDetails${prediction.lng}");
+                                    print("placeDetails${prediction.description}");
+                                    print(prediction);
+
                                 Get.back();
                                 // controller.selection = TextSelection.fromPosition(TextPosition(offset: prediction.description.length));
                               },
@@ -261,7 +266,7 @@ class CreateAccountScreen extends StatelessWidget {
                 const SizedBox(
                   height: 16,
                 ),
-                // const RadioButtonsWidget(),
+                const RadioButtonsWidget(),
                 const SizedBox(
                   height: 16,
                 ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:nadi/src/utils/constants.dart';
 import 'package:nadi/src/view/screens/appointment_booking_screen.dart';
 import 'package:nadi/src/view/screens/nearest_doctor_screen.dart';
 import 'package:nadi/src/viewmodel/patient_dashboad_viewmodel.dart';
@@ -126,6 +128,7 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                                   Get.to(() => AppointmentBookingScreen(
                                         doctorId: doctor.id,
                                         isUpdate: false,
+                                        isFromDoctor: false,
                                       ));
                                 },
                                 child: Column(
@@ -210,7 +213,7 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                             ),
                           )
                         : ListView.builder(
-                          reverse: true,
+                            reverse: true,
                             physics: const NeverScrollableScrollPhysics(),
                             padding: const EdgeInsets.symmetric(horizontal: 0),
                             scrollDirection: Axis.vertical,
@@ -226,6 +229,13 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                                 child: GestureDetector(
                                   onTap: () {
                                     print("appointment.id ${appointment.id}");
+
+                                    if(appointment.status=="Cancelled" || appointment.status=="Completed"){
+                                    Fluttertoast.showToast(
+                                        msg: "You can't update past appointment",
+                                      );
+                                      return;
+                                    }
 
                                     Get.put(AppointmentBookingController())
                                             .selectedDay =
@@ -243,6 +253,7 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                                           doctorId:
                                               appointment.doctorId.toString(),
                                           isUpdate: true,
+                                          isFromDoctor: false,
                                         ));
                                   },
                                   child: Container(
@@ -347,33 +358,51 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                                               const SizedBox(
                                                 width: 8,
                                               ),
-                                              Text(appointment.doctorName,
+                                              Text(
+                                                  appointment.doctorName
+                                                      .capitalizeFirst!,
                                                   style: const TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 15,
                                                       fontWeight:
                                                           FontWeight.w500,
                                                       color: Colors.black87)),
                                               const Spacer(),
                                               Container(
-                                                height: 24,
-                                                width: 24,
+                                                height: 30,
+                                                width: 80,
                                                 alignment: Alignment.center,
-                                                decoration: const BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: Colors.green,
+                                                decoration: BoxDecoration(
+                                                  color: () {
+                                                    switch (
+                                                        appointment.status) {
+                                                      case 'Pending':
+                                                        return ConstantThings
+                                                            .accentColor.withOpacity(0.7);
+                                                      case 'Cancelled':
+                                                        return Colors
+                                                            .red.shade400;
+                                                      case 'Scheduled':
+                                                          return ConstantThings
+                                                            .accentColor;
+                                                      case 'Completed':
+                                                        return Colors
+                                                            .green.shade300;
+                                                      default:
+                                                        return Colors
+                                                            .grey.shade50;
+                                                    }
+                                                  }(),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
                                                 ),
-                                                child: appointment.status ==
-                                                        "Scheduled"
-                                                    ? const Icon(
-                                                        Icons.check,
-                                                        color: Colors.white,
-                                                        size: 16,
-                                                      )
-                                                    : const Icon(
-                                                        Icons.cancel,
-                                                        color: Colors.white,
-                                                        size: 16,
-                                                      ),
+                                                child: Text(
+                                                 appointment.status,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.white
+                                                  ),
+                                                ),
                                               ),
                                             ],
                                           )

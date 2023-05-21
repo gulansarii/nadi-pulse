@@ -9,6 +9,8 @@ import '../models/user_model.dart';
 
 class PatientDashBoardViewModel extends GetxController {
   String patient_id = "";
+  String latitude = "";
+  String longitude = "";
   RxBool isLoading = false.obs;
   RxBool isAppointmentLoading = false.obs;
 
@@ -21,7 +23,11 @@ class PatientDashBoardViewModel extends GetxController {
   getPatientid() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     patient_id = prefs.getString("user_id")!;
+    latitude = prefs.getString("latitude")!;
+    longitude = prefs.getString("longitude")!;
     print("patient_id $patient_id");
+    print("latitude $latitude");
+    print("longitude $longitude");
   }
 
   setConnection() async {
@@ -34,10 +40,27 @@ class PatientDashBoardViewModel extends GetxController {
     isLoading.value = true;
 
     try {
-      List<List<dynamic>> results = await connection.query('''
-    SELECT * FROM users
+      var query = '''
+    SELECT *
+    FROM users
     WHERE role = 'D'
-  ''');
+      AND earth_distance(
+          ll_to_earth(latitude, longitude),
+          ll_to_earth(@userLatitude, @userLongitude)
+        ) < 500000000
+  ''';
+
+      final substitutionValues = {
+        'userLatitude': latitude,
+        'userLongitude': longitude,
+      };
+      List<List<dynamic>> results =
+          await connection.query(query, substitutionValues: substitutionValues);
+
+      //     List<List<dynamic>> results = await connection.query('''
+      //   SELECT * FROM users
+      //   WHERE role = 'D'
+      // ''');
       userList.value = [];
       for (final row in results) {
         final user = User(
@@ -50,7 +73,9 @@ class PatientDashBoardViewModel extends GetxController {
           state: row[6].toString(),
           latitude: row[7] as double,
           longitude: row[8] as double,
-          createdAt: row[9] as DateTime,
+          createdAt: row[10] as DateTime,
+          location: row[9].toString(),
+          uuid: row[11].toString(),
         );
         userList.add(user);
       }
@@ -66,11 +91,19 @@ class PatientDashBoardViewModel extends GetxController {
   getAllAppointments() async {
     isAppointmentLoading.value = true;
     try {
+      await connection.execute('''
+UPDATE appointments
+SET status = 'Completed'
+WHERE appointment_date < CURRENT_DATE
+  AND status <> 'Completed';
+''');
       List<List<dynamic>> results = await connection.query('''
   SELECT a.*, u.name AS doctor_name
 FROM appointments AS a
 JOIN users AS u ON a.doctor_id = u.id
-WHERE a.patient_id = '$patient_id';
+WHERE a.patient_id = '$patient_id'
+  ORDER BY appointment_date ASC;
+
   ''');
       appointmentList.value = [];
       print(results);
@@ -82,13 +115,13 @@ WHERE a.patient_id = '$patient_id';
           'appointment_date': row[3] as DateTime,
           'appointment_time': row[4].toString(),
           'status': row[5].toString(),
-          'doctor_name': row[7].toString(),
+          'doctor_name': row[6].toString(),
         });
         appointmentList.add(appointment);
       }
       print(appointmentList.length);
     } catch (e) {
-      Fluttertoast.showToast(msg: "Error in fetching data");
+      // Fluttertoast.showToast(msg: "Error in fetching data");
       print(e);
     } finally {
       isAppointmentLoading.value = false;

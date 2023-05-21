@@ -10,7 +10,8 @@ class User {
   final double latitude;
   final double longitude;
   final DateTime createdAt;
-
+  final String location;
+   String? uuid;
   User({
     required this.id,
     required this.email,
@@ -22,6 +23,8 @@ class User {
     required this.latitude,
     required this.longitude,
     required this.createdAt,
+   required this.location ,
+   required this.uuid
   });
 
   factory User.fromMap(Map<String, dynamic> map) {
@@ -36,6 +39,8 @@ class User {
       latitude: map['latitude'],
       longitude: map['longitude'],
       createdAt: map['createdAt'],
+      location: map['location'],
+      uuid: map['uuid']??""
     );
   }
 }

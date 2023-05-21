@@ -1,5 +1,6 @@
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:nadi/src/viewmodel/doctor_dashboard_controller.dart';
 import 'package:nadi/src/viewmodel/patient_dashboad_viewmodel.dart';
 import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../service/database_service.dart';
 
 class AppointmentBookingController extends GetxController {
+  bool isFromDoctor = false;
   DateTime selectedDay = DateTime.now();
   late PostgreSQLConnection connection;
   String selectedTimeSlot = "";
@@ -47,13 +49,6 @@ class AppointmentBookingController extends GetxController {
       return;
     }
 
-    // Check if appointment already exists
-    final isAppointmentExist = await isAppointmentExistForDate(selectedDay);
-    if (isAppointmentExist) {
-      Fluttertoast.showToast(msg: "Appointment already exists");
-      return;
-    }
-
     try {
       const createTableQuery = '''
       CREATE TABLE IF NOT EXISTS appointments (
@@ -62,13 +57,22 @@ class AppointmentBookingController extends GetxController {
         patient_id INT NOT NULL,
         appointment_date TIMESTAMP WITH TIME ZONE NOT NULL,
         appointment_time VARCHAR(100) NOT NULL,
-        status VARCHAR(255) NOT NULL DEFAULT 'Scheduled',
+        status VARCHAR(255) NOT NULL DEFAULT 'Pending',
         FOREIGN KEY (doctor_id) REFERENCES users (id),
         FOREIGN KEY (patient_id) REFERENCES users (id)
       )
     ''';
 
       await connection.query(createTableQuery);
+
+      // Check if appointment already exists
+      final isExits = await isAppointmentExistForDate(selectedDay);
+
+      if (isExits) {
+        Fluttertoast.showToast(
+            msg: "Appointment already exists for the selected date");
+        return;
+      }
       await connection.query('''
       INSERT INTO appointments (doctor_id, patient_id, appointment_date, appointment_time)
       VALUES (@doctorId, @patientId, @selectedDate, @selectedTimeSlot)
@@ -78,6 +82,11 @@ class AppointmentBookingController extends GetxController {
         'selectedDate': selectedDay,
         'selectedTimeSlot': selectedTimeSlot,
       });
+
+      print("doctorId $doctorId");
+      print("patientId $patientId");
+      print("selectedDate $selectedDay");
+      print("selectedTimeSlot $selectedTimeSlot");
 
       // print(result);
 
@@ -112,7 +121,12 @@ class AppointmentBookingController extends GetxController {
         'appointmentId': appointmentId,
       });
 
-      Get.find<PatientDashBoardViewModel>().getAllAppointments();
+      if (isFromDoctor) {
+        Get.find<DoctorDashboardController>().getUpcomingAppointments();
+        Get.find<DoctorDashboardController>().getPastAppointments();
+      } else {
+        Get.find<PatientDashBoardViewModel>().getAllAppointments();
+      }
       Fluttertoast.showToast(msg: "Appointment updated successfully");
 
       Get.back();
@@ -131,7 +145,12 @@ class AppointmentBookingController extends GetxController {
     ''', substitutionValues: {'appointmentId': appointmentId});
 
       if (result.affectedRowCount > 0) {
-        Get.find<PatientDashBoardViewModel>().getAllAppointments();
+        if (isFromDoctor) {
+          Get.find<DoctorDashboardController>().getUpcomingAppointments();
+          Get.find<DoctorDashboardController>().getPastAppointments();
+        } else {
+          Get.find<PatientDashBoardViewModel>().getAllAppointments();
+        }
         Get.back();
         Fluttertoast.showToast(msg: "Appointment cancelled successfully");
       } else {

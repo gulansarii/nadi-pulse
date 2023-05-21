@@ -10,8 +10,9 @@ import 'package:weekly_date_picker/weekly_date_picker.dart';
 class AppointmentBookingScreen extends StatefulWidget {
   String doctorId;
   bool isUpdate;
+  bool isFromDoctor;
   AppointmentBookingScreen(
-      {super.key, required this.doctorId, required this.isUpdate});
+      {super.key, required this.doctorId, required this.isUpdate , required this.isFromDoctor});
 
   @override
   State<AppointmentBookingScreen> createState() =>
@@ -31,6 +32,7 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
   void initState() {
     appointmentBookingController.doctorId = widget.doctorId;
     appointmentBookingController.isUpdate = widget.isUpdate;
+    appointmentBookingController.isFromDoctor = widget.isFromDoctor;
     setData();
     super.initState();
   }
