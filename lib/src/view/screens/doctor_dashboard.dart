@@ -323,7 +323,7 @@ class _DoctorDashboardState extends State<DoctorDashboard>
                                                   width: 8,
                                                 ),
                                                 SizedBox(
-                                                  width: Get.width * 0.28,
+                                                  width: Get.width * 0.24,
                                                   child: Text(
                                                       appointment.doctorName
                                                           .capitalizeFirst!,

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -22,8 +20,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SizedBox(
             width: Get.width,
-            child: Row(
-              children: const [
+            child: const Row(
+              children: [
                 Text(
                   "Notifications",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -37,12 +35,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
         itemCount: 10,
         itemBuilder: (context, index) {
           return ListTile(
-            leading: CircleAvatar(
+            leading: const CircleAvatar(
               backgroundImage: NetworkImage(
                   'https://images.pexels.com/photos/5214996/pexels-photo-5214996.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
             ),
-            title: Text('Notification Title'),
-            subtitle: Text('Notification Subtitle'),
+            title: const Text('Notification Title'),
+            subtitle: const Text('Notification Subtitle'),
             onTap: () {
               // Add your onTap logic here
             },

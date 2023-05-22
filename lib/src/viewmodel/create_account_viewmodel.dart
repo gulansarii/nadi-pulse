@@ -19,21 +19,17 @@ class CreateAccountViewModel extends GetxController {
     return results.isNotEmpty;
   }
 
-  TextEditingController nameTextController =
-      TextEditingController(text: "usaram");
-  TextEditingController passwordTextController =
-      TextEditingController(text: "123456");
-  TextEditingController confirmPasswordTextController =
-      TextEditingController(text: "123456");
-  TextEditingController emailTextController =
-      TextEditingController(text: "usaramwasi99@gmail.com");
+  TextEditingController nameTextController = TextEditingController();
+  TextEditingController passwordTextController = TextEditingController();
+  TextEditingController confirmPasswordTextController = TextEditingController();
+  TextEditingController emailTextController = TextEditingController();
   TextEditingController addressTextController = TextEditingController();
   bool isPatient = true;
-  String latitude = "28.5355";
-  String longitude = "77.3910";
-  String city = "Noida";
-  String state = "UP";
-  String completeAddress = "Noida, UP";
+  String latitude = "";
+  String longitude = "";
+  String city = "";
+  String state = "";
+  String completeAddress = "";
   String uuid = fcmToken;
 
   @override

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nadi/src/view/screens/appointment_booking_screen.dart';
 import 'package:nadi/src/viewmodel/nearest_doctor_controller.dart';
 
+import '../../viewmodel/appointment_booking_controller.dart';
 import '../../viewmodel/patient_dashboad_viewmodel.dart';
 
 class NearestDoctorScreen extends StatefulWidget {
@@ -13,6 +14,14 @@ class NearestDoctorScreen extends StatefulWidget {
 }
 
 class _NearestDoctorScreenState extends State<NearestDoctorScreen> {
+  String? getFirstTwoWords(String input) {
+    List<String> words = input.split(' ');
+    if (words.length >= 2) {
+      return words.getRange(0, 2).join(' ');
+    }
+    return input.capitalizeFirst;
+  }
+
   PatientDashBoardViewModel patientDashBoardViewModel = Get.find();
   final NearestDoctorController nearestDoctorController =
       Get.put(NearestDoctorController());
@@ -28,7 +37,7 @@ class _NearestDoctorScreenState extends State<NearestDoctorScreen> {
             children: [
               !nearestDoctorController.isSearchEnable.value
                   ? const Text(
-                      "Nearest Doctors",
+                      "Doctors",
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )
@@ -36,6 +45,16 @@ class _NearestDoctorScreenState extends State<NearestDoctorScreen> {
                       height: 30,
                       width: Get.width / 1.5,
                       child: TextField(
+                        onSubmitted: (value) {
+                          patientDashBoardViewModel.getAllDoctorSearchedList(
+                              nearestDoctorController.searchController.text);
+                              nearestDoctorController.isSearchEnable.value = false;
+                        },
+                        onChanged: (value) {
+                          if(value.isEmpty){
+                            patientDashBoardViewModel.getAllDoctorList();
+                          }
+                        },
                         controller: nearestDoctorController.searchController,
                         decoration: const InputDecoration(
                             isDense: true,
@@ -64,7 +83,9 @@ class _NearestDoctorScreenState extends State<NearestDoctorScreen> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Obx(() => patientDashBoardViewModel.isLoading.value
-            ? const CircularProgressIndicator()
+            ? SizedBox(
+              height: Get.height - 200,
+              child: const Center(child: CircularProgressIndicator()))
             : patientDashBoardViewModel.userList.isEmpty
                 ? const Center(
                     child: Text("No Doctor Found"),
@@ -106,8 +127,9 @@ class _NearestDoctorScreenState extends State<NearestDoctorScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      patientDashBoardViewModel
-                                          .userList[index].name,
+                                      getFirstTwoWords(patientDashBoardViewModel
+                                              .userList[index].name)
+                                          .toString(),
                                       style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500),
@@ -127,11 +149,14 @@ class _NearestDoctorScreenState extends State<NearestDoctorScreen> {
                                 const Spacer(),
                                 GestureDetector(
                                   onTap: () {
+                                      Get.put(AppointmentBookingController())
+                                        .doctorFcm = patientDashBoardViewModel
+                                              .userList[index].uuid!;
                                     Get.to(() => AppointmentBookingScreen(
                                           doctorId: patientDashBoardViewModel
                                               .userList[index].id,
-                                              isUpdate: false,
-                                               isFromDoctor: false,
+                                          isUpdate: false,
+                                          isFromDoctor: false,
                                         ));
                                   },
                                   child: Container(

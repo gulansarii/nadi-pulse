@@ -54,6 +54,8 @@ class CreateAccountScreen extends StatelessWidget {
                   height: 32,
                 ),
                 TextFormField(
+                  keyboardType: TextInputType.name,
+                  textInputAction: TextInputAction.next,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   controller: createAccountViewModel.nameTextController,
                   validator: (value) {
@@ -81,6 +83,8 @@ class CreateAccountScreen extends StatelessWidget {
                   height: 16,
                 ),
                 TextFormField(
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.done,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
 
                   controller: createAccountViewModel.emailTextController,
@@ -110,6 +114,7 @@ class CreateAccountScreen extends StatelessWidget {
                   height: 16,
                 ),
                 TextFormField(
+                  readOnly: true,
                   // autovalidateMode: AutovalidateMode.onUserInteraction,
                   onTap: () {
                     showDialog(
@@ -132,7 +137,7 @@ class CreateAccountScreen extends StatelessWidget {
                                       Radius.circular(12.0),
                                     ),
                                   ),
-                                  hintText: 'Choose Address',
+                                  hintText: 'Search Address',
                                   labelStyle: TextStyle(color: Colors.grey)),
                               countries: const ["in", "fr"],
                               isLatLngRequired: true,
@@ -201,7 +206,7 @@ class CreateAccountScreen extends StatelessWidget {
                 ),
                 TextFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-
+                  textInputAction: TextInputAction.next,
                   controller: createAccountViewModel.passwordTextController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -230,6 +235,7 @@ class CreateAccountScreen extends StatelessWidget {
                 ),
                 TextFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
+                  textInputAction: TextInputAction.done,
 
                   controller:
                       createAccountViewModel.confirmPasswordTextController,

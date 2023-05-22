@@ -12,7 +12,7 @@ class PatientDashBoardViewModel extends GetxController {
   String longitude = "";
   RxBool isLoading = true.obs;
   RxBool isAppointmentLoading = true.obs;
-RxString loggedInUserName = "".obs;
+  RxString loggedInUserName = "".obs;
   RxList<User> userList = <User>[].obs;
   RxList<Appointment> appointmentList = <Appointment>[].obs;
 
@@ -47,7 +47,7 @@ RxString loggedInUserName = "".obs;
       AND earth_distance(
           ll_to_earth(latitude, longitude),
           ll_to_earth(@userLatitude, @userLongitude)
-        ) < 10000
+        ) < 10000000
   ''';
 
       final substitutionValues = {
@@ -88,6 +88,45 @@ RxString loggedInUserName = "".obs;
       isLoading.value = false;
     }
   }
+
+  getAllDoctorSearchedList(String word) async {
+    isLoading.value = true;
+
+    try {
+      var query = '''
+      SELECT * FROM users WHERE role = 'D' AND location ILIKE '%$word%';
+    ''';
+
+    List<List<dynamic>> results = await connection.query(query);
+      userList.value = [];
+      for (final row in results) {
+        final user = User(
+          id: row[0].toString(),
+          email: row[1].toString(),
+          password: row[2].toString(),
+          role: row[3].toString(),
+          name: row[4].toString(),
+          city: row[5].toString(),
+          state: row[6].toString(),
+          latitude: row[7] as double,
+          longitude: row[8] as double,
+          createdAt: row[10] as DateTime,
+          location: row[9].toString(),
+          uuid: row[11].toString(),
+        );
+        userList.add(user);
+      }
+    } catch (e) {
+      // Fluttertoast.showToast(msg: "Error in fetching data");
+      print(e);
+    } finally {
+      print(userList.length);
+      isLoading.value = false;
+    }
+  }
+
+
+
 
   getAllAppointments() async {
     isAppointmentLoading.value = true;

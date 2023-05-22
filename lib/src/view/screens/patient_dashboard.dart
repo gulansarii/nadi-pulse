@@ -30,6 +30,14 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
     patientDashBoardViewModel.getAllAppointments();
   }
 
+  String getFirstTwoWords(String input) {
+    List<String> words = input.split(' ');
+    if (words.length >= 2) {
+      return words.getRange(0, 2).join(' ');
+    }
+    return input;
+  }
+
   @override
   void initState() {
     getData();
@@ -185,7 +193,7 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                                 child: Row(
                                   children: [
                                     const Text(
-                                      "Nearest Doctors",
+                                      "Doctors",
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
@@ -194,7 +202,10 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                                     TextButton(
                                       onPressed: () {
                                         Get.to(
-                                            () => const NearestDoctorScreen());
+                                            () => const NearestDoctorScreen())!.then((value) {
+                                          patientDashBoardViewModel
+                                              .getAllDoctorList();
+                                            } );
                                       },
                                       child: const Text(
                                         "See All",
@@ -271,7 +282,7 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                                       ),
                                       SizedBox(
                                         child: Text(
-                                          "${doctor.name} hdhd dh hdhd hd ",
+                                          getFirstTwoWords(doctor.name),
                                           style: const TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500),
@@ -290,7 +301,7 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: SizedBox(
                   width: Get.width,
-                  child: Row(
+                  child: const Row(
                     children: [
                       Text(
                         "My Appointments",

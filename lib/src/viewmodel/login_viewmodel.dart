@@ -14,9 +14,9 @@ class LoginViewModel extends GetxController {
   RxBool isLoading = false.obs;
 
   TextEditingController emailController =
-      TextEditingController(text: "usaramwasi99@gmail.com");
+      TextEditingController();
   TextEditingController passwordController =
-      TextEditingController(text: "123456");
+      TextEditingController();
 
   late user_model.User loginUser;
    PostgreSQLConnection connection = postgreSQLConnection;
