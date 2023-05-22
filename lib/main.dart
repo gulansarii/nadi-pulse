@@ -10,26 +10,26 @@ import 'package:postgres/postgres.dart';
 import 'firebase_options.dart';
 
 var fcmToken = "";
-late PostgreSQLConnection postgreSQLConnection ;
+late PostgreSQLConnection postgreSQLConnection;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  postgreSQLConnection = PostgreSQLConnection(
+      "db.ensydxxnswzsajkbcfgn.supabase.co", 5432, "postgres",
+      username: "postgres", password: "RIYGU3lO5mz2Le6u");
+  await postgreSQLConnection
+      .open()
+      .then((value) => print("Connected to databasesssss"))
+      .catchError((e) {
+    print(e);
+    print("Connection failed");
+  });
+  // await DatabaseService.getConnection();
+  // token handling
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  postgreSQLConnection = PostgreSQLConnection(
-        "db.ensydxxnswzsajkbcfgn.supabase.co", 5432, "postgres",
-        username: "postgres", password: "RIYGU3lO5mz2Le6u");
-    await postgreSQLConnection
-        .open()
-        .then((value) => print("Connected to databasesssss"))
-        .catchError((e) {
-      print(e);
-      print("Connection failed");
-    });
-  // await DatabaseService.getConnection();
-  // token handling
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   fcmToken = (await messaging.getToken())!;
   print("$fcmToken this is fcm token");

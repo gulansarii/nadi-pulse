@@ -149,6 +149,7 @@ class _DoctorDashboardState extends State<DoctorDashboard>
         await doctorDashboardController.getUpcomingAppointments();
       },
       child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
             Padding(
@@ -311,32 +312,28 @@ class _DoctorDashboardState extends State<DoctorDashboard>
                                             ),
                                             Row(
                                               children: [
-                                                Container(
-                                                    height: 40,
-                                                    width: 40,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      border: Border.all(
-                                                          width: 1,
-                                                          color: Colors
-                                                              .grey.shade400),
-                                                    ),
-                                                    child: Image.asset(
-                                                      'assets/doctor.png',
-                                                      height: 22,
-                                                    )),
+                                               SizedBox(
+                                                  height: 45,
+                                                  width: 45,
+                                             
+                                                  child: Image.asset(
+                                                    'assets/person.png',
+                                                    height: 22,
+                                                  )),
                                                 const SizedBox(
                                                   width: 8,
                                                 ),
-                                                Text(
-                                                    appointment.doctorName
-                                                        .capitalizeFirst!,
-                                                    style: const TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: Colors.black87)),
+                                                SizedBox(
+                                                  width: Get.width * 0.28,
+                                                  child: Text(
+                                                      appointment.doctorName
+                                                          .capitalizeFirst!,
+                                                      style: const TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: Colors.black87)),
+                                                ),
                                                 const Spacer(),
                                                 appointment.status == "Pending"
                                                     ? Row(
@@ -500,6 +497,8 @@ class _DoctorDashboardState extends State<DoctorDashboard>
         doctorDashboardController.getPastAppointments();
       },
       child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+
         child: Column(
           children: [
             Padding(
@@ -658,32 +657,28 @@ class _DoctorDashboardState extends State<DoctorDashboard>
                                           ),
                                           Row(
                                             children: [
-                                              Container(
-                                                  height: 40,
-                                                  width: 40,
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    border: Border.all(
-                                                        width: 1,
-                                                        color: Colors
-                                                            .grey.shade400),
-                                                  ),
+                                              SizedBox(
+                                                  height: 45,
+                                                  width: 45,
+                                             
                                                   child: Image.asset(
-                                                    'assets/doctor.png',
+                                                    'assets/person.png',
                                                     height: 22,
                                                   )),
                                               const SizedBox(
                                                 width: 8,
                                               ),
-                                              Text(
-                                                  appointment.doctorName
-                                                      .capitalizeFirst!,
-                                                  style: const TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color: Colors.black87)),
+                                              SizedBox(
+                                                  width: Get.width * 0.45,
+                                                child: Text(
+                                                    appointment.doctorName
+                                                        .capitalizeFirst!,
+                                                    style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: Colors.black87)),
+                                              ),
                                               const Spacer(),
                                               Container(
                                                 height: 30,

@@ -7,11 +7,10 @@ import 'package:postgres/postgres.dart';
 import 'package:nadi/src/models/user_model.dart' as user_model;
 
 import '../../main.dart';
-import '../service/database_service.dart';
 
 class CreateAccountViewModel extends GetxController {
   RxBool isLoading = false.obs;
-  late PostgreSQLConnection connection;
+   PostgreSQLConnection connection = postgreSQLConnection;
   late user_model.User loginUser;
 
   Future<bool> isEmailAlreadyExists(String email) async {
@@ -38,7 +37,7 @@ class CreateAccountViewModel extends GetxController {
 
   @override
   void onInit() async {
-    connection = await DatabaseService.getConnection();
+    // connection = await DatabaseService.getConnection();
     super.onInit();
   }
 

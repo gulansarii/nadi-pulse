@@ -245,21 +245,21 @@ class CreateAccountScreen extends StatelessWidget {
                 const SizedBox(
                   height: 16,
                 ),
-                Obx(() => GestureDetector(
+                GestureDetector(
                       onTap: () {
                         if (createAccountViewModel.isLoading.value == false) {
                           createAccountViewModel.createAccount();
                         }
                       },
-                      child: Container(
+                      child:  Container(
                         decoration: BoxDecoration(
                           color: ConstantThings.accentColor,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         height: 48,
                         width: Get.width,
-                        alignment: Alignment.center,
-                        child: createAccountViewModel.isLoading.value
+                        alignment:  Alignment.center,
+                        child:Obx(() =>  createAccountViewModel.isLoading.value
                             ? SizedBox(
                                 height: 50,
                                 width: 50,
@@ -272,8 +272,8 @@ class CreateAccountScreen extends StatelessWidget {
                                 'Create Account',
                                 style: TextStyle(color: Colors.white),
                               ),
-                      ),
-                    ))
+                      )),
+                    )
               ],
             ),
           ),

@@ -111,7 +111,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         loginViewModel.passwordController.text);
                   }
                 },
-                child: Container(
+                child: Obx(() =>  Container(
                   decoration: BoxDecoration(
                     color: ConstantThings.accentColor,
                     borderRadius: BorderRadius.circular(12),
@@ -132,7 +132,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           'Submit',
                           style: TextStyle(color: Colors.white),
                         ),
-                ),
+                )),
               ),
               const SizedBox(
                 height: 16,

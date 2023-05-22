@@ -7,12 +7,13 @@ import 'package:nadi/src/viewmodel/patient_dashboad_viewmodel.dart';
 import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../service/database_service.dart';
+import '../../main.dart';
 
 class AppointmentBookingController extends GetxController {
+  RxBool isBookLoading = false.obs;
   bool isFromDoctor = false;
   DateTime selectedDay = DateTime.now();
-  late PostgreSQLConnection connection;
+   PostgreSQLConnection connection = postgreSQLConnection;
   String selectedTimeSlot = "";
   String doctorId = "";
   String patientId = "";
@@ -29,7 +30,7 @@ class AppointmentBookingController extends GetxController {
   }
 
   setConnection() async {
-    connection = await DatabaseService.getConnection();
+    // connection = await DatabaseService.getConnection();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     loggedInUserName = prefs.getString("name")!;
     print(connection.isClosed);
@@ -55,6 +56,8 @@ class AppointmentBookingController extends GetxController {
       Fluttertoast.showToast(msg: "Please select a time slot");
       return;
     }
+        isBookLoading.value = true;
+
 
     try {
       const createTableQuery = '''
@@ -106,10 +109,13 @@ class AppointmentBookingController extends GetxController {
               "${loggedInUserName.capitalizeFirst} book appoinment for ${formatedofDate.format(selectedDay)}",
           fcmToken: doctorFcm);
 
-      // Get.back();
+      Get.back();
     } catch (e) {
       Fluttertoast.showToast(msg: "Something went wrong");
       print('Error creating/updating appointment: $e');
+    }
+    finally{
+      isBookLoading.value = false;
     }
   }
 
@@ -140,6 +146,11 @@ class AppointmentBookingController extends GetxController {
       } else {
         Get.find<PatientDashBoardViewModel>().getAllAppointments();
       }
+         NotificationService.showNotification(
+          title: "Appointment Updated",
+          message:
+              "${loggedInUserName.capitalizeFirst} update appoinment for ${formatedofDate.format(selectedDay)}",
+          fcmToken: doctorFcm);
       Fluttertoast.showToast(msg: "Appointment updated successfully");
 
       Get.back();

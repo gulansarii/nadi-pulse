@@ -4,7 +4,7 @@ import 'package:nadi/src/models/appointments_model.dart';
 import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../service/database_service.dart';
+import '../../main.dart';
 import '../service/notification_service.dart';
 
 class DoctorDashboardController extends GetxController {
@@ -14,7 +14,7 @@ class DoctorDashboardController extends GetxController {
   RxBool isLoading = true.obs;
   RxBool isAppointmentLoading = true.obs;
   RxBool isAcceptReject = false.obs;
-  late PostgreSQLConnection connection;
+   PostgreSQLConnection connection = postgreSQLConnection;
   RxList<Appointment> pastAppointmentList = <Appointment>[].obs;
   RxString loggedInUserName = "".obs;
   var formatedofDate = DateFormat('dd MMM yyyy');
@@ -27,9 +27,9 @@ class DoctorDashboardController extends GetxController {
   }
 
   setConnection() async {
-    print("set connection");
-    connection = await DatabaseService.getConnection();
-    print(connection.isClosed);
+    // print("set connection");
+    // connection = await DatabaseService.getConnection();
+    // print(connection.isClosed);
   }
 
   getUpcomingAppointments() async {
@@ -127,7 +127,7 @@ WHERE appointments.doctor_id = '$doctorId'
       NotificationService.showNotification(
           title: "Appointment Accepted",
           message:
-              "${loggedInUserName.value.capitalizeFirst} accepted appoinment for ${formatedofDate.format(date)}",
+              "${loggedInUserName.value.capitalizeFirst} accepted appointment for ${formatedofDate.format(date)}",
           fcmToken: fcmToken);
     } catch (e) {
       print('Error accepting appointment: $e');
@@ -149,7 +149,7 @@ WHERE appointments.doctor_id = '$doctorId'
       NotificationService.showNotification(
           title: "Appointment Rejected",
           message:
-              "${loggedInUserName.value.capitalizeFirst} rejected appoinment for ${formatedofDate.format(date)}",
+              "${loggedInUserName.value.capitalizeFirst} rejected appointment for ${formatedofDate.format(date)}",
           fcmToken: fcmToken);
     } catch (e) {
       print('Error rejecting appointment: $e');

@@ -8,7 +8,6 @@ import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../main.dart';
-import '../service/database_service.dart';
 import '../view/screens/patient_dashboard.dart';
 
 class LoginViewModel extends GetxController {
@@ -20,15 +19,15 @@ class LoginViewModel extends GetxController {
       TextEditingController(text: "123456");
 
   late user_model.User loginUser;
-  late PostgreSQLConnection connection;
+   PostgreSQLConnection connection = postgreSQLConnection;
 
   setConnection() async {
-    connection = await DatabaseService.getConnection();
+    // connection = await DatabaseService.getConnection();
   }
 
   @override
   void onInit() async {
-    connection = await DatabaseService.getConnection();
+    // connection = await DatabaseService.getConnection();
     super.onInit();
   }
 

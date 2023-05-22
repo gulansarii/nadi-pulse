@@ -81,7 +81,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                       width: Get.width / 4,
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          Get.offAll(() => const SignInScreen());
+                                          Get.to(() => const SignInScreen());
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: ConstantThings.accentColor,
