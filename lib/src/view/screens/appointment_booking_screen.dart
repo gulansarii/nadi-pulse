@@ -45,6 +45,7 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(appointmentBookingController.doctorFcm);
     return Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: AppBar(

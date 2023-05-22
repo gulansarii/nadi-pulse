@@ -1,3 +1,4 @@
+import 'package:bcrypt/bcrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -5,9 +6,11 @@ import 'package:nadi/src/viewmodel/login_viewmodel.dart';
 import 'package:postgres/postgres.dart';
 import 'package:nadi/src/models/user_model.dart' as user_model;
 
+import '../../main.dart';
 import '../service/database_service.dart';
 
 class CreateAccountViewModel extends GetxController {
+  RxBool isLoading = false.obs;
   late PostgreSQLConnection connection;
   late user_model.User loginUser;
 
@@ -31,7 +34,7 @@ class CreateAccountViewModel extends GetxController {
   String longitude = "77.3910";
   String city = "Noida";
   String state = "UP";
-  String uuid  = "";
+  String uuid = fcmToken;
 
   @override
   void onInit() async {
@@ -40,9 +43,11 @@ class CreateAccountViewModel extends GetxController {
   }
 
   Future<void> createAccount() async {
+    isLoading.value = true;
+
     try {
       // await connection.open();
-         const createTableQuery = '''
+      const createTableQuery = '''
       CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
@@ -67,14 +72,17 @@ class CreateAccountViewModel extends GetxController {
 
         return;
       }
-   
+
+      String hashedPassword =
+          BCrypt.hashpw(passwordTextController.text, BCrypt.gensalt());
+
       var query = '''
   INSERT INTO users (email, password, role, name, city, state, latitude, longitude , location , uuid)
   VALUES (@email, @password, @role, @name, @city, @state, @latitude, @longitude , @location , @uuid)
 ''';
       final results = await connection.execute(query, substitutionValues: {
         'email': emailTextController.text,
-        'password': passwordTextController.text,
+        'password': hashedPassword,
         'role': isPatient ? 'P' : 'D',
         'name': nameTextController.text,
         'city': city,
@@ -93,6 +101,8 @@ class CreateAccountViewModel extends GetxController {
     } catch (error) {
       Fluttertoast.showToast(msg: "User registration failed");
       print(error);
+    } finally {
+      isLoading.value = false;
     }
   }
 }

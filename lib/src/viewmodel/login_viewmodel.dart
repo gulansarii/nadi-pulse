@@ -1,3 +1,4 @@
+import 'package:bcrypt/bcrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -6,19 +7,25 @@ import 'package:nadi/src/view/screens/doctor_dashboard.dart';
 import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../main.dart';
 import '../service/database_service.dart';
 import '../view/screens/patient_dashboard.dart';
 
 class LoginViewModel extends GetxController {
-  TextEditingController emailController = TextEditingController(text: "usaramwasi99@gmail.com");
-  TextEditingController passwordController = TextEditingController(text: "123456");
+  RxBool isLoading = false.obs;
+
+  TextEditingController emailController =
+      TextEditingController(text: "usaramwasi99@gmail.com");
+  TextEditingController passwordController =
+      TextEditingController(text: "123456");
 
   late user_model.User loginUser;
   late PostgreSQLConnection connection;
 
-  setConnection()async{
+  setConnection() async {
     connection = await DatabaseService.getConnection();
   }
+
   @override
   void onInit() async {
     connection = await DatabaseService.getConnection();
@@ -26,15 +33,39 @@ class LoginViewModel extends GetxController {
   }
 
   Future<void> login(String email, String pass) async {
+    isLoading.value = true;
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      final query =
-          "SELECT * FROM users WHERE email = '$email' AND password = '$pass'";
+      final query = "SELECT * FROM users WHERE email = '$email'";
       final results = await connection.query(query);
+      print(results);
+
       if (results.isEmpty) {
         print('Invalid credentials');
         Fluttertoast.showToast(msg: "Invalid credentials");
+        return;
       } else {
+        final bool isValidPassword =
+            BCrypt.checkpw(pass, results[0][2].toString());
+        print(isValidPassword);
+        print(results[0][2].toString());
+        if (!isValidPassword) {
+          Fluttertoast.showToast(msg: "Invalid email or password");
+          return;
+        }
+
+        String uuid = fcmToken;
+
+        const updateQuery = '''
+        UPDATE users
+        SET uuid = @uuid
+        WHERE email = @email
+      ''';
+        await connection.query(updateQuery, substitutionValues: {
+          'uuid': uuid,
+          'email': email,
+        });
+
         print(results[0][11].toString());
         loginUser = user_model.User.fromMap({
           'id': results[0][0].toString(),
@@ -46,7 +77,7 @@ class LoginViewModel extends GetxController {
           'state': results[0][6].toString(),
           'latitude': results[0][7] as double,
           'longitude': results[0][8] as double,
-          'location' : results[0][9].toString(),
+          'location': results[0][9].toString(),
           'createdAt': results[0][10] as DateTime,
           'uuid': results[0][11].toString(),
         });
@@ -56,17 +87,19 @@ class LoginViewModel extends GetxController {
         prefs.setString("role", loginUser.role);
         prefs.setString("latitude", loginUser.latitude.toString());
         prefs.setString("longitude", loginUser.longitude.toString());
+        prefs.setString('name', loginUser.name);
         Fluttertoast.showToast(msg: "Login Sucessfull");
         if (loginUser.role == "P") {
           Get.offAll(() => const PatientDashboard());
-        } 
-        else {
+        } else {
           Get.offAll(() => const DoctorDashboard());
         }
       }
     } catch (error) {
       print(error);
       Fluttertoast.showToast(msg: "Something went wrong ");
+    } finally {
+      isLoading.value = false;
     }
   }
 }

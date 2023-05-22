@@ -1,23 +1,29 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:nadi/src/models/appointments_model.dart';
 import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../service/database_service.dart';
+import '../service/notification_service.dart';
 
 class DoctorDashboardController extends GetxController {
   String doctorId = "";
   String latitude = "";
   String longitude = "";
-  RxBool isLoading = false.obs;
-  RxBool isAppointmentLoading = false.obs;
+  RxBool isLoading = true.obs;
+  RxBool isAppointmentLoading = true.obs;
+  RxBool isAcceptReject = false.obs;
   late PostgreSQLConnection connection;
   RxList<Appointment> pastAppointmentList = <Appointment>[].obs;
+  RxString loggedInUserName = "".obs;
+  var formatedofDate = DateFormat('dd MMM yyyy');
 
   RxList<Appointment> upcomingAppointmentList = <Appointment>[].obs;
   getPatientid() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     doctorId = prefs.getString("user_id")!;
+    loggedInUserName.value = prefs.getString("name")!;
   }
 
   setConnection() async {
@@ -27,7 +33,7 @@ class DoctorDashboardController extends GetxController {
   }
 
   getUpcomingAppointments() async {
-    isAppointmentLoading.value = true;
+    isAcceptReject.value ? null : isAppointmentLoading.value = true;
     try {
       await connection.execute('''
 UPDATE appointments
@@ -37,7 +43,7 @@ WHERE appointment_date < CURRENT_DATE
 ''');
       List<List<dynamic>> results = await connection.query('''
 
-SELECT appointments.*, users.name AS patient_name
+SELECT appointments.*, users.name AS patient_name ,users.uuid AS fcm_token
 FROM appointments
 JOIN users ON appointments.patient_id = users.id
 WHERE appointments.doctor_id = '$doctorId'
@@ -56,6 +62,8 @@ ORDER BY appointment_date ASC;
           'appointment_time': row[4].toString(),
           'status': row[5].toString(),
           'doctor_name': row[6].toString(),
+                    'fcm_token': row[7].toString(),
+
         });
         upcomingAppointmentList.add(appointment);
       }
@@ -63,12 +71,12 @@ ORDER BY appointment_date ASC;
     } catch (e) {
       print(e);
     } finally {
-      isAppointmentLoading.value = false;
+      isAcceptReject.value ? null : isAppointmentLoading.value = false;
     }
   }
 
   getPastAppointments() async {
-    isAppointmentLoading.value = true;
+    isAcceptReject.value ? null : isLoading.value = true;
     try {
       await connection.execute('''
 UPDATE appointments
@@ -77,7 +85,7 @@ WHERE appointment_date < CURRENT_DATE
   AND status <> 'Completed';
 ''');
       List<List<dynamic>> results = await connection.query('''
-SELECT appointments.*, users.name AS patient_name
+SELECT appointments.*, users.name AS patient_name ,users.uuid AS fcm_token
 FROM appointments
 JOIN users ON appointments.patient_id = users.id
 WHERE appointments.doctor_id = '$doctorId'
@@ -86,6 +94,7 @@ WHERE appointments.doctor_id = '$doctorId'
   ''');
       pastAppointmentList.value = [];
       for (final row in results) {
+        print(row[7].toString());
         final appointment = Appointment.fromMap({
           'id': row[0] as int,
           'doctor_id': row[1] as int,
@@ -94,17 +103,19 @@ WHERE appointments.doctor_id = '$doctorId'
           'appointment_time': row[4].toString(),
           'status': row[5].toString(),
           'doctor_name': row[6].toString(),
+          'fcm_token': row[7].toString(),
         });
         pastAppointmentList.add(appointment);
       }
     } catch (e) {
       print(e);
     } finally {
-      isAppointmentLoading.value = false;
+      isAcceptReject.value ? null : isLoading.value = false;
     }
   }
 
-  acceptAppointment(int appointmentId) async {
+  acceptAppointment(int appointmentId, String fcmToken, DateTime date) async {
+    isAcceptReject.value = true;
     try {
       await connection.execute('''
       UPDATE appointments
@@ -112,12 +123,21 @@ WHERE appointments.doctor_id = '$doctorId'
       WHERE id = $appointmentId;
     ''');
       await getUpcomingAppointments();
+      await getPastAppointments();
+      NotificationService.showNotification(
+          title: "Appointment Accepted",
+          message:
+              "${loggedInUserName.value.capitalizeFirst} accepted appoinment for ${formatedofDate.format(date)}",
+          fcmToken: fcmToken);
     } catch (e) {
       print('Error accepting appointment: $e');
+    } finally {
+      isAcceptReject.value = false;
     }
   }
 
-  rejectAppointment(int appointmentId) async {
+  rejectAppointment(int appointmentId, String fcmToken, DateTime date) async {
+    isAcceptReject.value = true;
     try {
       await connection.execute('''
       UPDATE appointments
@@ -126,8 +146,15 @@ WHERE appointments.doctor_id = '$doctorId'
     ''');
       await getUpcomingAppointments();
       await getPastAppointments();
+      NotificationService.showNotification(
+          title: "Appointment Rejected",
+          message:
+              "${loggedInUserName.value.capitalizeFirst} rejected appoinment for ${formatedofDate.format(date)}",
+          fcmToken: fcmToken);
     } catch (e) {
       print('Error rejecting appointment: $e');
+    } finally {
+      isAcceptReject.value = false;
     }
   }
 }

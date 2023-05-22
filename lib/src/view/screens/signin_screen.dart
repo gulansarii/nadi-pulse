@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:nadi/src/utils/constants.dart';
 import 'package:nadi/src/view/screens/create_account_screen.dart';
 import 'package:nadi/src/viewmodel/login_viewmodel.dart';
@@ -53,8 +54,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter email';
-                  }
-                  else if(GetUtils.isEmail(value) == false){
+                  } else if (GetUtils.isEmail(value) == false) {
                     return 'Please enter valid email';
                   }
                   return null;
@@ -82,8 +82,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter password';
-                  }
-                  else if(value.length < 6){
+                  } else if (value.length < 6) {
                     return 'Password must be atleast 6 characters';
                   }
                   return null;
@@ -105,23 +104,34 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(
                 height: 32,
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: ConstantThings.accentColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                height: 48,
-                width: Get.width,
-                child: TextButton(
-                  onPressed: () {
-                   if( _formKey.currentState!.validate()){
-                      loginViewModel.login(loginViewModel.emailController.text,  loginViewModel.passwordController.text);
-                   }
-                  },
-                  child: const Text(
-                    'Submit',
-                    style: TextStyle(color: Colors.white),
+              GestureDetector(
+                onTap: () {
+                  if (_formKey.currentState!.validate()) {
+                    loginViewModel.login(loginViewModel.emailController.text,
+                        loginViewModel.passwordController.text);
+                  }
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ConstantThings.accentColor,
+                    borderRadius: BorderRadius.circular(12),
                   ),
+                  height: 48,
+                  width: Get.width,
+                  alignment: Alignment.center,
+                  child: loginViewModel.isLoading.value
+                      ? SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: LoadingAnimationWidget.waveDots(
+                              color: Colors.white,
+                              // rightDotColor: Colors.white,
+                              size: 45),
+                        )
+                      : const Text(
+                          'Submit',
+                          style: TextStyle(color: Colors.white),
+                        ),
                 ),
               ),
               const SizedBox(

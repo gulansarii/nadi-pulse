@@ -1,5 +1,7 @@
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:nadi/src/service/notification_service.dart';
 import 'package:nadi/src/viewmodel/doctor_dashboard_controller.dart';
 import 'package:nadi/src/viewmodel/patient_dashboad_viewmodel.dart';
 import 'package:postgres/postgres.dart';
@@ -16,15 +18,20 @@ class AppointmentBookingController extends GetxController {
   String patientId = "";
   bool isUpdate = false;
   String appointmentId = "";
+  String doctorFcm = "";
+  String loggedInUserName = "";
+  var formatedofDate = DateFormat('dd MMM yyyy');
+  // String formattedDate = formatedofDate.format(selectedDay.appointmentDate);
 
   getPatientid() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     patientId = prefs.getString("user_id")!;
-    // print("patient_id $patientId");
   }
 
   setConnection() async {
     connection = await DatabaseService.getConnection();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    loggedInUserName = prefs.getString("name")!;
     print(connection.isClosed);
   }
 
@@ -89,11 +96,17 @@ class AppointmentBookingController extends GetxController {
       print("selectedTimeSlot $selectedTimeSlot");
 
       // print(result);
+      print("doctorFcm $doctorFcm");
 
       Get.find<PatientDashBoardViewModel>().getAllAppointments();
       Fluttertoast.showToast(msg: "Appointment booked successfully");
+      NotificationService.showNotification(
+          title: "Appointment Booked",
+          message:
+              "${loggedInUserName.capitalizeFirst} book appoinment for ${formatedofDate.format(selectedDay)}",
+          fcmToken: doctorFcm);
 
-      Get.back();
+      // Get.back();
     } catch (e) {
       Fluttertoast.showToast(msg: "Something went wrong");
       print('Error creating/updating appointment: $e');
@@ -151,7 +164,13 @@ class AppointmentBookingController extends GetxController {
         } else {
           Get.find<PatientDashBoardViewModel>().getAllAppointments();
         }
+
         Get.back();
+        NotificationService.showNotification(
+            title: "Appointment Booked",
+            message:
+                "${loggedInUserName.capitalizeFirst} cancel appoinment for ${formatedofDate.format(selectedDay)}",
+            fcmToken: doctorFcm);
         Fluttertoast.showToast(msg: "Appointment cancelled successfully");
       } else {
         Fluttertoast.showToast(msg: "Failed to cancel appointment");
