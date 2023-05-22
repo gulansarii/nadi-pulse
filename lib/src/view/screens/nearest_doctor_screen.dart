@@ -131,6 +131,7 @@ class _NearestDoctorScreenState extends State<NearestDoctorScreen> {
                                           doctorId: patientDashBoardViewModel
                                               .userList[index].id,
                                               isUpdate: false,
+                                               isFromDoctor: false,
                                         ));
                                   },
                                   child: Container(

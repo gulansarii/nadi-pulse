@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "21199101132",
+    "project_id": "doctor-patient-af5fc",
+    "storage_bucket": "doctor-patient-af5fc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:21199101132:android:26c95ab5025e7293fcf669",
+        "android_client_info": {
+          "package_name": "com.nadi.pulse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "21199101132-9v6aqjcuskttj2b3kj3581q8132vbg1f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9FVi9dEVDzmgvNnSoCSxqFbP5VdAVFMQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "21199101132-9v6aqjcuskttj2b3kj3581q8132vbg1f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

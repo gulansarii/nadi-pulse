@@ -1,14 +1,16 @@
+import 'package:bcrypt/bcrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:nadi/src/viewmodel/login_viewmodel.dart';
 import 'package:postgres/postgres.dart';
 import 'package:nadi/src/models/user_model.dart' as user_model;
 
-import '../service/database_service.dart';
+import '../../main.dart';
 
 class CreateAccountViewModel extends GetxController {
-  
-  late PostgreSQLConnection connection;
+  RxBool isLoading = false.obs;
+  PostgreSQLConnection connection = postgreSQLConnection;
   late user_model.User loginUser;
 
   Future<bool> isEmailAlreadyExists(String email) async {
@@ -17,33 +19,34 @@ class CreateAccountViewModel extends GetxController {
     return results.isNotEmpty;
   }
 
-  TextEditingController nameTextController = TextEditingController(text: "usaram");
-  TextEditingController passwordTextController = TextEditingController(text: "123456");
-  TextEditingController confirmPasswordTextController = TextEditingController(text: "123456");
-  TextEditingController emailTextController = TextEditingController(text: "usaramwasi99@gmail.com");
+  TextEditingController nameTextController =
+      TextEditingController(text: "usaram");
+  TextEditingController passwordTextController =
+      TextEditingController(text: "123456");
+  TextEditingController confirmPasswordTextController =
+      TextEditingController(text: "123456");
+  TextEditingController emailTextController =
+      TextEditingController(text: "usaramwasi99@gmail.com");
   TextEditingController addressTextController = TextEditingController();
   bool isPatient = true;
-  String latitude = "222";
-  String longitude = "222";
-  String city = "22";
-  String state = "222";
+  String latitude = "28.5355";
+  String longitude = "77.3910";
+  String city = "Noida";
+  String state = "UP";
+  String completeAddress = "Noida, UP";
+  String uuid = fcmToken;
 
-    @override
+  @override
   void onInit() async {
-    connection = await DatabaseService.getConnection();
+    // connection = await DatabaseService.getConnection();
     super.onInit();
   }
 
   Future<void> createAccount() async {
+    isLoading.value = true;
+
     try {
       // await connection.open();
-      final isEmailExists = await isEmailAlreadyExists(emailTextController.text);
-      if (isEmailExists) {
-        print("Email already exists. User registration failed.");
-              Fluttertoast.showToast(msg: "User already exists");
-
-        return;
-      }
       const createTableQuery = '''
       CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -55,30 +58,51 @@ class CreateAccountViewModel extends GetxController {
     state VARCHAR(255) NOT NULL,
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION,
-    createdAt TIMESTAMP DEFAULT current_timestamp
+    location VARCHAR,
+    createdAt TIMESTAMP DEFAULT current_timestamp,
+    uuid VARCHAR
 );
       ''';
+      await connection.execute(createTableQuery);
+      final isEmailExists =
+          await isEmailAlreadyExists(emailTextController.text);
+      if (isEmailExists) {
+        print("Email already exists. User registration failed.");
+        Fluttertoast.showToast(msg: "User already exists");
 
-       await connection.execute(createTableQuery);
-  var query = '''
-  INSERT INTO users (email, password, role, name, city, state, latitude, longitude)
-  VALUES (@email, @password, @role, @name, @city, @state, @latitude, @longitude)
+        return;
+      }
+
+      String hashedPassword =
+          BCrypt.hashpw(passwordTextController.text, BCrypt.gensalt());
+
+      var query = '''
+  INSERT INTO users (email, password, role, name, city, state, latitude, longitude , location , uuid)
+  VALUES (@email, @password, @role, @name, @city, @state, @latitude, @longitude , @location , @uuid)
 ''';
-final results = await connection.execute(query, substitutionValues: {
-  'email': emailTextController.text,
-  'password': passwordTextController.text,
-  'role': isPatient ? 'P' : 'D',
-  'name': nameTextController.text,
-  'city': city,
-  'state': state,
-  'latitude': latitude,
-  'longitude': longitude,
-});
+      final results = await connection.execute(query, substitutionValues: {
+        'email': emailTextController.text,
+        'password': hashedPassword,
+        'role': isPatient ? 'P' : 'D',
+        'name': nameTextController.text,
+        'city': city,
+        'state': state,
+        'latitude': latitude,
+        'longitude': longitude,
+        'location': '$city, $state',
+        'uuid': uuid
+      });
+
       print(results);
-      Fluttertoast.showToast(msg: "User registered ");
+      await Get.put(LoginViewModel()).setConnection();
+      Get.find<LoginViewModel>()
+          .login(emailTextController.text, passwordTextController.text);
+      Fluttertoast.showToast(msg: "User registration successful");
     } catch (error) {
       Fluttertoast.showToast(msg: "User registration failed");
       print(error);
+    } finally {
+      isLoading.value = false;
     }
   }
 }

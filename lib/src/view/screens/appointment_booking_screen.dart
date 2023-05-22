@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:nadi/src/utils/constants.dart';
 import 'package:nadi/src/view/widgets/timeslot_widget.dart';
 import 'package:nadi/src/viewmodel/appointment_booking_controller.dart';
@@ -10,8 +11,12 @@ import 'package:weekly_date_picker/weekly_date_picker.dart';
 class AppointmentBookingScreen extends StatefulWidget {
   String doctorId;
   bool isUpdate;
+  bool isFromDoctor;
   AppointmentBookingScreen(
-      {super.key, required this.doctorId, required this.isUpdate});
+      {super.key,
+      required this.doctorId,
+      required this.isUpdate,
+      required this.isFromDoctor});
 
   @override
   State<AppointmentBookingScreen> createState() =>
@@ -31,6 +36,7 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
   void initState() {
     appointmentBookingController.doctorId = widget.doctorId;
     appointmentBookingController.isUpdate = widget.isUpdate;
+    appointmentBookingController.isFromDoctor = widget.isFromDoctor;
     setData();
     super.initState();
   }
@@ -43,6 +49,7 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(appointmentBookingController.doctorFcm);
     return Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
@@ -115,7 +122,7 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
                         SafeArea(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.red.shade400,
+                                color: Colors.red.shade300,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             // height: 48,
@@ -187,23 +194,35 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
                       ],
                     )
                   : SafeArea(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: ConstantThings.accentColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        // height: 48,
-                        width: Get.width,
-                        child: TextButton(
-                          onPressed: () {
-                            appointmentBookingController.bookAppointment();
-                          },
-                          child: const Text(
-                            'Book Appointment',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
+                      child: Obx(() => InkWell(
+                            onTap: () {
+                              appointmentBookingController.bookAppointment();
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: ConstantThings.accentColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              height: 48,
+                                                      alignment: Alignment.center,
+
+                              width: Get.width,
+                              child: appointmentBookingController
+                                      .isBookLoading.value
+                                  ? SizedBox(
+                                      height: 50,
+                                      width: 50,
+                                      child: LoadingAnimationWidget.waveDots(
+                                          color: Colors.white,
+                                          // rightDotColor: Colors.white,
+                                          size: 45),
+                                    )
+                                  : const Text(
+                                      'Book Appointment',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                            ),
+                          )),
                     ),
               const SizedBox(
                 height: 16,

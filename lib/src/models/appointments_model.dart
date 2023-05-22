@@ -6,6 +6,7 @@ class Appointment {
   final String appointmentTime;
   final String status;
   final String doctorName;
+   String? fcmToken;
 
   Appointment({
     required this.id,
@@ -15,6 +16,7 @@ class Appointment {
     required this.appointmentTime,
     required this.status,
     required this.doctorName,
+    required this.fcmToken,
   });
 
   factory Appointment.fromMap(Map<String, dynamic> map) {
@@ -26,6 +28,7 @@ class Appointment {
       appointmentTime: map['appointment_time'] as String,
       status: map['status'] as String,
       doctorName: map['doctor_name'] as String,
+      fcmToken: map['fcm_token'] ?? "",
     );
   }
 }

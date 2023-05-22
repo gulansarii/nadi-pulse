@@ -23,7 +23,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           child: SizedBox(
             width: Get.width,
             child: Row(
-              children: [
+              children: const [
                 Text(
                   "Notifications",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

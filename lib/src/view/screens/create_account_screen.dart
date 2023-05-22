@@ -3,8 +3,10 @@ import 'package:get/get.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:nadi/src/utils/constants.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../viewmodel/create_account_viewmodel.dart';
+import '../widgets/radio_button_widget.dart';
 
 class CreateAccountScreen extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
@@ -58,7 +60,7 @@ class CreateAccountScreen extends StatelessWidget {
                     if (value == null || value.isEmpty) {
                       return 'Please enter name';
                     }
-      
+
                     return null;
                   },
                   decoration: const InputDecoration(
@@ -80,7 +82,7 @@ class CreateAccountScreen extends StatelessWidget {
                 ),
                 TextFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-      
+
                   controller: createAccountViewModel.emailTextController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -108,7 +110,6 @@ class CreateAccountScreen extends StatelessWidget {
                   height: 16,
                 ),
                 TextFormField(
-                
                   // autovalidateMode: AutovalidateMode.onUserInteraction,
                   onTap: () {
                     showDialog(
@@ -138,42 +139,41 @@ class CreateAccountScreen extends StatelessWidget {
                               getPlaceDetailWithLatLng:
                                   (Prediction prediction) {
                                 print("placeDetails${prediction.lng}");
+                                print("placeDetails${prediction.lat}");
+                                createAccountViewModel.latitude =
+                                    prediction.lat!;
+                                createAccountViewModel.longitude =
+                                    prediction.lng!;
                               },
                               itmClick: (Prediction prediction) {
                                 createAccountViewModel.addressTextController
                                     .text = prediction.description!;
+
+                                // print("placeDetails${prediction.lng}");
+                                String data = prediction.description!;
+
+                                List<String> parts = data.split(", ");
+                                createAccountViewModel.city =
+                                    parts[parts.length - 3];
+                                createAccountViewModel.state =
+                                    parts[parts.length - 2];
+                                createAccountViewModel.completeAddress =
+                                    prediction.description!;
+
+                                print("city ${createAccountViewModel.city}");
+                                print("state ${createAccountViewModel.state}");
+                                print(
+                                    "complete Address ${createAccountViewModel.completeAddress}");
+
+                                // print(prediction);
                                 Get.back();
-                                // controller.selection = TextSelection.fromPosition(TextPosition(offset: prediction.description.length));
                               },
                             ),
                           ),
                         );
                       },
                     );
-      
                     //   Get.bottomSheet(Container(
-                    //     height: Get.height / 2,
-                    //     color: Colors.white,
-                    //     child: GooglePlaceAutoCompleteTextField(
-                    //         textEditingController: TextEditingController(),
-                    //         googleAPIKey:
-                    //             "AIzaSyBhPteA6FOMIaQqRIpHk7xLM5I4BN3_zMs ",
-                    //         inputDecoration: InputDecoration(),
-                    //         countries: [
-                    //           "in",
-                    //           "fr"
-                    //         ], // optional by default null is set
-                    //         isLatLngRequired:
-                    //             true, // if you required coordinates from place detail
-                    //         getPlaceDetailWithLatLng: (Prediction prediction) {
-                    //           // this method will return latlng with place detail
-                    //           print("placeDetails" + prediction.lng.toString());
-                    //         }, // this callback is called when isLatLngRequired is true
-                    //         itmClick: (Prediction prediction) {
-                    //           //  controller.text=prediction.description;
-                    //           //   controller.selection = TextSelection.fromPosition(TextPosition(offset: prediction.description.length));
-                    //         }),
-                    //   ));
                   },
                   controller: createAccountViewModel.addressTextController,
                   validator: (value) {
@@ -201,7 +201,7 @@ class CreateAccountScreen extends StatelessWidget {
                 ),
                 TextFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-      
+
                   controller: createAccountViewModel.passwordTextController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -230,7 +230,7 @@ class CreateAccountScreen extends StatelessWidget {
                 ),
                 TextFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-      
+
                   controller:
                       createAccountViewModel.confirmPasswordTextController,
                   validator: (value) {
@@ -261,30 +261,39 @@ class CreateAccountScreen extends StatelessWidget {
                 const SizedBox(
                   height: 16,
                 ),
-                // const RadioButtonsWidget(),
+                const RadioButtonsWidget(),
                 const SizedBox(
                   height: 16,
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: ConstantThings.accentColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  height: 48,
-                  width: Get.width,
-                  child: TextButton(
-                    onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        createAccountViewModel.createAccount();
-                      }
-      
-                      // createAccountViewModel.createAccount();
-                    },
-                    child: const Text(
-                      'Create Account',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
+                GestureDetector(
+                  onTap: () {
+                    if (createAccountViewModel.isLoading.value == false) {
+                      createAccountViewModel.createAccount();
+                    }
+                  },
+                  child: Container(
+                      decoration: BoxDecoration(
+                        color: ConstantThings.accentColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      height: 48,
+                      width: Get.width,
+                      alignment: Alignment.center,
+                      child: Obx(
+                        () => createAccountViewModel.isLoading.value
+                            ? SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: LoadingAnimationWidget.waveDots(
+                                    color: Colors.white,
+                                    // rightDotColor: Colors.white,
+                                    size: 45),
+                              )
+                            : const Text(
+                                'Create Account',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                      )),
                 )
               ],
             ),
