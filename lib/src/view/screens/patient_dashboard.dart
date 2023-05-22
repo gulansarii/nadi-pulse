@@ -46,11 +46,15 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                   width: Get.width,
                   child: Stack(
                     children: [
-                      Image.network(
-                        'https://images.pexels.com/photos/3985166/pexels-photo-3985166.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-                        fit: BoxFit.cover,
-                        height: Get.height * 0.4,
-                        width: Get.width,
+                      Stack(
+                        children: [
+                          Image.network(
+                            'https://images.pexels.com/photos/3985166/pexels-photo-3985166.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+                            fit: BoxFit.cover,
+                            height: Get.height * 0.4,
+                            width: Get.width,
+                          ),
+                        ],
                       ),
                       Align(
                         alignment: Alignment.bottomCenter,
@@ -166,7 +170,7 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: SizedBox(
                 width: Get.width,
-                child: const Row(
+                child: Row(
                   children: [
                     Text(
                       "My Appointments",
@@ -210,7 +214,7 @@ class _AppointmentBookingScreenState extends State<PatientDashboard> {
                             ),
                           )
                         : ListView.builder(
-                          reverse: true,
+                            reverse: true,
                             physics: const NeverScrollableScrollPhysics(),
                             padding: const EdgeInsets.symmetric(horizontal: 0),
                             scrollDirection: Axis.vertical,

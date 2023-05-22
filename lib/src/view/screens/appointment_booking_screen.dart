@@ -48,7 +48,7 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
         appBar: AppBar(
           backgroundColor: Colors.grey[100],
           elevation: 0,
-          title: const Row(
+          title: Row(
             children: [
               Text(
                 "Book Appointment",
@@ -131,14 +131,20 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
                                             'Are you sure you want to cancel this appointment?'),
                                         actions: <Widget>[
                                           TextButton(
-                                            child: const Text('Cancel' , style: TextStyle(color: Colors.black)),
+                                            child: const Text('Cancel',
+                                                style: TextStyle(
+                                                    color: Colors.black)),
                                             onPressed: () {
                                               Navigator.of(context)
                                                   .pop(); // Close the dialog
                                             },
                                           ),
                                           TextButton(
-                                            child: const Text('Confirm' , style: TextStyle(color: Colors.black),),
+                                            child: const Text(
+                                              'Confirm',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
                                             onPressed: () {
                                               appointmentBookingController
                                                   .cancelAppointment();

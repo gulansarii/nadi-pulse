@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nadi/src/view/screens/notification_screen.dart';
 
 class DoctorDashboard extends StatefulWidget {
   const DoctorDashboard({super.key});
@@ -20,12 +21,19 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SizedBox(
             width: Get.width,
-            child: const Row(
+            child: Row(
               children: [
-                Text(
+                const Text(
                   "My Bookings",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () {
+                    Get.to(() => const NotificationScreen());
+                  },
+                  icon: const Icon(Icons.notifications),
+                )
               ],
             ),
           ),
@@ -84,11 +92,11 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                                 const SizedBox(
                                   height: 8,
                                 ),
-                                const Row(
+                                Row(
                                   children: [
-                                    Icon(Icons.access_time_outlined,
+                                    const Icon(Icons.access_time_outlined,
                                         color: Colors.black87, size: 24),
-                                    Text(
+                                    const Text(
                                       " 12 May   10:00 - 11:00 AM",
                                       style: TextStyle(
                                           fontSize: 14,
